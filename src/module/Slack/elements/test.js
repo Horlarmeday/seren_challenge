@@ -1,0 +1,40 @@
+{ type: 'block_actions',
+  user:
+   { id: 'U01PPE95X9B',
+     username: 'ajaomahmud',
+     name: 'ajaomahmud',
+     team_id: 'T01PSGTMULA' },
+  api_app_id: 'A01PSH1R4RG',
+  token: 'gTeHhAfbIFmczdJHHX0uT7m8',
+  container:
+   { type: 'message_attachment',
+     message_ts: '1614858936.000400',
+     attachment_id: 1,
+     channel_id: 'C01Q0K8PM1S',
+     is_ephemeral: false,
+     is_app_unfurl: false },
+  trigger_id:
+   '1834055352273.1808571742690.fcd664109d2ddc2ebd8dae47a3a70bac',
+  team: { id: 'T01PSGTMULA', domain: 'serenchallenge' },
+  enterprise: null,
+  is_enterprise_install: false,
+  channel: { id: 'C01Q0K8PM1S', name: 'testing_channel' },
+  message:
+   { bot_id: 'B01PKQ2QB3Q',
+     type: 'message',
+     text: 'When are you free this week for a walk?.',
+     user: 'U01QGCEDG56',
+     ts: '1614858936.000400',
+     team: 'T01PSGTMULA',
+     edited: { user: 'B01PKQ2QB3Q', ts: '1614858941.000000' },
+     attachments: [ [Object] ] },
+  state: { values: { section678: [Object], section6789: [Object] } },
+  response_url:
+   'https://hooks.slack.com/actions/T01PSGTMULA/1821631687987/leZMBqpfVBuoBYwYnxcPLbtn',
+  actions:
+   [ { type: 'multi_static_select',
+       action_id: 'text1234',
+       block_id: 'section678',
+       selected_options: [Array],
+       placeholder: [Object],
+       action_ts: '1614858952.989299' } ] }
