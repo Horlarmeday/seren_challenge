@@ -1,13 +1,16 @@
+import Agendash from 'agendash2';
 import userRoutes from '../module/User/userRoutes';
 import questionRoutes from '../module/Question/question.routes';
 import answerRoutes from '../module/Answer/answer.routes';
 import slashCommands from '../module/Slack/slashCommand';
+import agenda from '../command/agenda';
 
 export default server => {
   server.use('/api/users', userRoutes);
   server.use('/api/questions', questionRoutes);
   server.use('/api/answers', answerRoutes);
   server.use(slashCommands);
+  server.use('/dash', Agendash(agenda));
 
   server.use((req, res, next) => {
     const apiTimeout = 18000;

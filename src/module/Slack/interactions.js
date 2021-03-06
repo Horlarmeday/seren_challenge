@@ -8,6 +8,7 @@ import { getQuestionByPosition } from '../Question/question.repository';
 import winston from 'winston';
 import AnswerService from '../Answer/answer.service';
 import { saveAnswer } from '../Answer/answer.repository';
+import { saveUserAnswer, saveUserMultipleAnswer } from '../../command/schedule';
 
 const slackInteractions = createMessageAdapter(process.env.SLACK_SIGNING_SECRET);
 const color = '#f2c744';
@@ -33,7 +34,7 @@ async function respondWithTimeSlots(callbackId, respond) {
               text: 'Select time slots',
             },
             accessory: {
-              action_id: 'text1234',
+              action_id: question._id,
               type: 'multi_static_select',
               placeholder: {
                 type: 'plain_text',
@@ -50,9 +51,10 @@ async function respondWithTimeSlots(callbackId, respond) {
 }
 
 async function respondToTimeSlot(payload, respond) {
+  // schedule save answer
+   await saveUserAnswer(payload);
+
    const callbackId = payload.callback_id;
-
-
 
    await respondWithTimeSlots(callbackId, respond);
 
@@ -76,7 +78,7 @@ async function respondWithDaysOfTheWeek(callbackId, respond) {
               text: 'Select days in a week',
             },
             accessory: {
-              action_id: 'text12349',
+              action_id: question._id,
               type: 'multi_static_select',
               placeholder: {
                 type: 'plain_text',
@@ -93,7 +95,11 @@ async function respondWithDaysOfTheWeek(callbackId, respond) {
 }
 
 async function respondToDaysOfTheWeek(payload, respond) {
+  // schedule save answer
+  await saveUserMultipleAnswer(payload);
+
   const callbackId = 'answer_days';
+
   await respondWithDaysOfTheWeek(callbackId, respond);
 
   return { text: 'Processing...' };
@@ -116,7 +122,7 @@ async function respondWithHobbies(callbackId, respond) {
               text: 'Pick hobbies',
             },
             accessory: {
-              action_id: 'text123493',
+              action_id: question._id,
               type: 'multi_static_select',
               placeholder: {
                 type: 'plain_text',
@@ -133,13 +139,17 @@ async function respondWithHobbies(callbackId, respond) {
 }
 
 async function respondToHobbies(payload, respond) {
+  // schedule save answer
+  await saveUserMultipleAnswer(payload);
+
   const callbackId = 'hobby_answer';
+
   await respondWithHobbies(callbackId, respond);
 
   return { text: 'Processing...' };
 }
 
-function respondWithNumberScale(text, callbackId, respond) {
+async function respondWithNumberScale(text, callbackId, respond) {
   inputText.callback_id = callbackId;
   respond({
     attachments: inputText,
@@ -147,7 +157,7 @@ function respondWithNumberScale(text, callbackId, respond) {
   });
 }
 
-function respondToNumberScale(payload, respond) {
+async function respondToNumberScale(payload, respond) {
   const text = 'What are the first 3 digits on the number scale?.';
   const callbackId = 'number_scale_answer';
   respondWithNumberScale(text, callbackId, respond);
@@ -194,6 +204,7 @@ slackInteractions.action({ type: 'select' }, (payload, respond) => {
 
 // Example of handling all dialog submissions
 slackInteractions.action({ blockId: 'question_2' }, (payload, respond) => {
+  winston.error(payload);
   return respondToDaysOfTheWeek(payload, respond);
 });
 
