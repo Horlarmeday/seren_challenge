@@ -1,9 +1,4 @@
 import { createMessageAdapter } from '@slack/interactive-messages';
-// import winston from 'winston';
-import timeSlot from './elements/timeSlotMenu';
-import daysOfTheWeek from './elements/daysOfTheWeekMenu';
-import hobbies from './elements/hobbiesMenu';
-import inputText from './elements/inputText.json';
 import { getQuestionByPosition } from '../Question/question.repository';
 import winston from 'winston';
 import { saveUserAnswer, saveUserMultipleAnswer } from '../../command/schedule';
