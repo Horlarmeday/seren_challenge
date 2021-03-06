@@ -1,8 +1,5 @@
 import { createEventAdapter } from '@slack/events-api';
 import { WebClient } from '@slack/web-api';
-import { ErrorHandler } from '../../utils/baseError';
-import responses from './elements/welcome';
-import eventEmitter from './elements/welcome';
 import { getQuestionByPosition } from '../Question/question.repository';
 
 const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
