@@ -6,11 +6,13 @@ import hobbies from './elements/hobbiesMenu';
 import inputText from './elements/inputText.json';
 import { getQuestionByPosition } from '../Question/question.repository';
 import winston from 'winston';
-import AnswerService from '../Answer/answer.service';
-import { saveAnswer } from '../Answer/answer.repository';
 import { saveUserAnswer, saveUserMultipleAnswer } from '../../command/schedule';
+import { WebClient } from '@slack/web-api';
+
+const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 const slackInteractions = createMessageAdapter(process.env.SLACK_SIGNING_SECRET);
+
 const color = '#f2c744';
 
 function listenForInteractions(app) {
@@ -149,54 +151,63 @@ async function respondToHobbies(payload, respond) {
   return { text: 'Processing...' };
 }
 
-async function respondWithNumberScale(text, callbackId, respond) {
-  inputText.callback_id = callbackId;
-  respond({
-    attachments: inputText,
-    replace_original: true,
+async function respondWithNumberScale(callbackId, respond) {
+
+  const question = await getQuestionByPosition(5);
+
+  const result = await web.views.open({
+    trigger_id: callbackId,
+    view: {
+      type: 'modal',
+      callback_id: 'question_5',
+      title: {
+        type: 'plain_text',
+        text: 'Modal title'
+      },
+      submit: {
+        type: 'plain_text',
+        text: 'Submit'
+      },
+      blocks: [
+        {
+          type: 'input',
+          label: {
+            type: 'plain_text',
+            text: question.text,
+          },
+          element: {
+            type: 'plain_text_input',
+            action_id: question._id
+          }
+        }
+      ]
+    }
   });
+
+  await finalResponse(result);
 }
 
 async function respondToNumberScale(payload, respond) {
-  const text = 'What are the first 3 digits on the number scale?.';
-  const callbackId = 'number_scale_answer';
-  respondWithNumberScale(text, callbackId, respond);
+  // schedule save answer
+  await saveUserMultipleAnswer(payload);
+
+  const callbackId = payload.trigger_id;
+
+  await respondWithNumberScale(callbackId, respond);
 
   return { text: 'Processing...' };
 }
 
-// function respondToSelectDropdown(payload, respond) {
-//   let text;
-//   let callbackId;
-//   const selectedOption = payload.actions[0].selected_options[0].value;
-
-//   if (payload.callback_id === 'response') {
-//     switch (selectedOption) {
-//       case 'doing_well':
-//         text = 'When are you free this week for a walk?.';
-//         callbackId = 'doing_well_answer';
-//         respondWithArticleOrBookNoButton(text, callbackId, respond);
-//         break;
-//       case 'neutral':
-//         text = 'When are you free this week for a walk?';
-//         callbackId = 'neutral_answer';
-//         respondWithArticleOrBookNoButton(text, callbackId, respond);
-//         break;
-//       case 'feeling_lucky':
-//         text = 'When are you free this week for a walk?';
-//         callbackId = 'feeling_lucky_answer';
-//         respondWithArticleOrBookNoButton(text, callbackId, respond);
-//         break;
-//       default:
-//         text = 'When are you free this week for a walk?';
-//         callbackId = 'anti_racism_article_book';
-//         respondWithArticleOrBookNoButton(text, callbackId, respond);
-//         break;
-//     }
-//   }
-//   // Return a replacement message
-//   return { text: 'Processing...' };
-// }
+async function finalResponse(payload, respond) {
+  await saveUserAnswer(payload);
+  respond({
+    blocks: [
+      {
+        text: 'Thank you'
+      }
+    ]
+  })
+}
 
 slackInteractions.action({ type: 'select' }, (payload, respond) => {
   return respondToTimeSlot(payload, respond);
@@ -216,8 +227,8 @@ slackInteractions.action({ blockId: 'question_4' }, (payload, respond) => {
   return respondToNumberScale(payload, respond);
 });
 
-// slackInteractions.action({ type: 'button' }, (payload, respond) => {
-//   return respondToButtons.respond(payload, respond);
-// });
+slackInteractions.viewSubmission('question_5', (payload, respond) => {
+  return finalResponse(payload, respond);
+});
 
 module.exports.listenForInteractions = listenForInteractions;

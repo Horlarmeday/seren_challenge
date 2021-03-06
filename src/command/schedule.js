@@ -13,3 +13,10 @@ export async function saveUserMultipleAnswer(payload) {
     payload
   });
 }
+
+
+export async function saveUserInputAnswer(payload) {
+  await agenda.schedule('in 5 seconds', Constant.SAVE_INPUT_ANSWER, {
+    payload
+  });
+}

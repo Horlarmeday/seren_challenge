@@ -43,6 +43,21 @@ agenda.define(Constant.SAVE_MULTIPLE_ANSWER, async job => {
   await saveAnswer(answer);
 });
 
+// agenda.define(Constant.SAVE_INPUT_ANSWER, async job => {
+//   const { payload } = job.attrs.data;
+//
+//   const answer = {
+//     question: payload.view.state.values.tm6K,
+//     answers: payload.view.state.values.tm6K[],
+//     user: {
+//       username: payload.user.username,
+//       name: payload.user.name,
+//       id: payload.user.id
+//     }
+//   };
+//   await saveAnswer(answer);
+// });
+
 agenda.start().then(r => console.log(r));
 
 module.exports = agenda;
